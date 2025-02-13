@@ -33,11 +33,6 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
   @override
-  void initState() {
-    super.initState();
-    // call api 
-  }
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
