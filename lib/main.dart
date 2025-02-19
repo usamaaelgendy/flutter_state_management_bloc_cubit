@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_state_management_bloc_cubit/controllers/bloc/counter_bloc.dart';
 
 void main() {
   runApp(const MyApp());
@@ -20,62 +22,64 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key, required this.title});
 
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+    print("build parent");
+    return BlocProvider(
+      create: (BuildContext context) => CounterBloc(),
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: Text(title),
         ),
-      ),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          FloatingActionButton(
-            onPressed: () {
-              setState(() {
-                _counter++;
-              });
-            },
-            tooltip: 'Increment',
-            child: const Icon(Icons.add),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              const Text(
+                'You have pushed the button this many times:',
+              ),
+              BlocBuilder<CounterBloc, CounterState>(
+                builder: (BuildContext context, state) {
+                  print("build child");
+                  return Text(
+                    state.count.toString(),
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  );
+                },
+              ),
+            ],
           ),
-          const SizedBox(height: 10),
-          FloatingActionButton(
-            onPressed: () {
-              setState(() {
-                _counter--;
-              });
-            },
-            tooltip: 'Decrement',
-            child: const Icon(Icons.minimize),
-          ),
-        ],
+        ),
+        floatingActionButton: BlocBuilder<CounterBloc, CounterState>(
+          builder: (context, state) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                FloatingActionButton(
+                  onPressed: () {
+                    context.read<CounterBloc>().add(IncrementEvent());
+                  },
+                  tooltip: 'Increment',
+                  child: const Icon(Icons.add),
+                ),
+                const SizedBox(height: 10),
+                FloatingActionButton(
+                  onPressed: () {
+                    context.read<CounterBloc>().add(DecrementEvent());
+                  },
+                  tooltip: 'Decrement',
+                  child: const Icon(Icons.minimize),
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
