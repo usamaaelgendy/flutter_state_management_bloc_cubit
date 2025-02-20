@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_state_management_bloc_cubit/controllers/bloc/counter_bloc.dart';
+import 'package:flutter_state_management_bloc_cubit/controllers/cubit/counter_cubit.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,7 +31,7 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     print("build parent");
     return BlocProvider(
-      create: (BuildContext context) => CounterBloc(),
+      create: (BuildContext context) => CounterCubit(),
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -44,7 +44,7 @@ class MyHomePage extends StatelessWidget {
               const Text(
                 'You have pushed the button this many times:',
               ),
-              BlocBuilder<CounterBloc, CounterState>(
+              BlocBuilder<CounterCubit, CounterState>(
                 builder: (BuildContext context, state) {
                   print("build child");
                   return Text(
@@ -56,14 +56,14 @@ class MyHomePage extends StatelessWidget {
             ],
           ),
         ),
-        floatingActionButton: BlocBuilder<CounterBloc, CounterState>(
+        floatingActionButton: BlocBuilder<CounterCubit, CounterState>(
           builder: (context, state) {
             return Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 FloatingActionButton(
                   onPressed: () {
-                    context.read<CounterBloc>().add(IncrementEvent());
+                    context.read<CounterCubit>().increment();
                   },
                   tooltip: 'Increment',
                   child: const Icon(Icons.add),
@@ -71,7 +71,7 @@ class MyHomePage extends StatelessWidget {
                 const SizedBox(height: 10),
                 FloatingActionButton(
                   onPressed: () {
-                    context.read<CounterBloc>().add(DecrementEvent());
+                    context.read<CounterCubit>().decrement();
                   },
                   tooltip: 'Decrement',
                   child: const Icon(Icons.minimize),
