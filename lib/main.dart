@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_state_management_bloc_cubit/controllers/cubit/counter_cubit.dart';
+import 'package:flutter_state_management_bloc_cubit/controllers/task_bloc.dart';
+import 'package:flutter_state_management_bloc_cubit/controllers/task_event.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,65 +18,66 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
 class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key, required this.title});
+  MyHomePage({super.key, required this.title});
 
   final String title;
+  final TextEditingController controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    print("build parent");
-    return BlocProvider(
-      create: (BuildContext context) => CounterCubit(),
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text(title),
-        ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              const Text(
-                'You have pushed the button this many times:',
-              ),
-              BlocBuilder<CounterCubit, CounterState>(
-                builder: (BuildContext context, state) {
-                  print("build child");
-                  return Text(
-                    state.count.toString(),
-                    style: Theme.of(context).textTheme.headlineMedium,
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
-        floatingActionButton: BlocBuilder<CounterCubit, CounterState>(
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text(title),
+      ),
+      body: BlocProvider(
+        create: (context) => TaskBloc(),
+        child: BlocBuilder<TaskBloc, TaskState>(
           builder: (context, state) {
+            final controllerCubit = context.read<TaskBloc>();
             return Column(
-              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                FloatingActionButton(
-                  onPressed: () {
-                    context.read<CounterCubit>().increment();
-                  },
-                  tooltip: 'Increment',
-                  child: const Icon(Icons.add),
+                TextField(
+                  controller: controller,
+                  decoration: const InputDecoration(hintText: 'Enter a task'),
                 ),
-                const SizedBox(height: 10),
-                FloatingActionButton(
+                ElevatedButton(
                   onPressed: () {
-                    context.read<CounterCubit>().decrement();
+                    if (controller.text.isEmpty) return;
+                    controllerCubit.add(AddTaskEvent(controller.text));
+                    controller.clear();
                   },
-                  tooltip: 'Decrement',
-                  child: const Icon(Icons.minimize),
+                  child: const Text("Add Task"),
                 ),
+                Expanded(
+                    child: ListView.builder(
+                  itemCount: state.tasksList.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return ListTile(
+                      title: Text(
+                        state.tasksList[index].title,
+                      ),
+                      leading: Checkbox(
+                        value: state.tasksList[index].isCompleted,
+                        onChanged: (value) {
+                          controllerCubit.add(ToggleTaskEvent(state.tasksList[index].id));
+                        },
+                      ),
+                      trailing: IconButton(
+                        onPressed: () {
+                          controllerCubit.add(RemoveTaskEvent(state.tasksList[index].id));
+                        },
+                        icon: const Icon(Icons.delete),
+                      ),
+                    );
+                  },
+                ))
               ],
             );
           },
