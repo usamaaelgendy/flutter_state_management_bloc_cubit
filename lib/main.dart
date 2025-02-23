@@ -33,7 +33,7 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Login")),
-      body: BlocListener<LoginCubit, LoginState>(
+      body: BlocConsumer<LoginCubit, LoginState>(
         listener: (context, state) {
           if (state is LoginFailure) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
@@ -41,34 +41,32 @@ class LoginPage extends StatelessWidget {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Login Sucess")));
           }
         },
-        child: BlocBuilder<LoginCubit, LoginState>(
-          builder: (context, state) {
-            return Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  TextField(
-                    controller: usernameController,
-                    decoration: const InputDecoration(labelText: "Username"),
-                  ),
-                  TextField(
-                      controller: passwordController,
-                      decoration: const InputDecoration(labelText: "Password"),
-                      obscureText: true),
-                  const SizedBox(height: 20),
-                  state is LoginLoading
-                      ? const CircularProgressIndicator()
-                      : ElevatedButton(
-                          onPressed: () {
-                            context.read<LoginCubit>().login(usernameController.text, passwordController.text);
-                          },
-                          child: const Text("Login"),
-                        ),
-                ],
-              ),
-            );
-          },
-        ),
+        builder: (context, state) {
+          return Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                TextField(
+                  controller: usernameController,
+                  decoration: const InputDecoration(labelText: "Username"),
+                ),
+                TextField(
+                    controller: passwordController,
+                    decoration: const InputDecoration(labelText: "Password"),
+                    obscureText: true),
+                const SizedBox(height: 20),
+                state is LoginLoading
+                    ? const CircularProgressIndicator()
+                    : ElevatedButton(
+                        onPressed: () {
+                          context.read<LoginCubit>().login(usernameController.text, passwordController.text);
+                        },
+                        child: const Text("Login"),
+                      ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
