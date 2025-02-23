@@ -44,29 +44,27 @@ class MyHomePage extends StatelessWidget {
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: Text(title),
         ),
-        body: BlocListener<CounterCubit, CounterState>(
-          listener: (context, state) {
-            if (state.count == 5) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Count = 5")));
-            }
-          },
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                const Text(
-                  'You have pushed the button this many times:',
-                ),
-                BlocBuilder<CounterCubit, CounterState>(
-                  builder: (BuildContext context, state) {
-                    return Text(
-                      state.count.toString(),
-                      style: Theme.of(context).textTheme.headlineMedium,
-                    );
-                  },
-                ),
-              ],
-            ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              const Text(
+                'You have pushed the button this many times:',
+              ),
+              BlocConsumer<CounterCubit, CounterState>(
+                listener: (context, state) {
+                  if (state.count == 5) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Count = 5")));
+                  }
+                },
+                builder: (BuildContext context, state) {
+                  return Text(
+                    state.count.toString(),
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  );
+                },
+              ),
+            ],
           ),
         ),
         floatingActionButton: BlocBuilder<CounterCubit, CounterState>(
