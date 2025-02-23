@@ -1,4 +1,4 @@
-
+import 'package:flutter/material.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 part 'counter_state.dart';
@@ -6,7 +6,7 @@ part 'counter_state.dart';
 class CounterCubit extends HydratedCubit<CounterState> {
   CounterCubit() : super(const CounterInit());
 
-  void increment() {
+  void increment(BuildContext context) {
     emit(CounterUpdate(state.count + 1));
   }
 
