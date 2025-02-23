@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'login_state.dart';
 
-class LoginBloc extends Cubit<LoginState> {
-  LoginBloc() : super(LoginInitial());
+class LoginCubit extends Cubit<LoginState> {
+  LoginCubit() : super(LoginInitial());
 
   void login(String username, String password) async {
     emit(LoginLoading());
